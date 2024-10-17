@@ -1,31 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:test1/app_theme.dart';
-import 'package:test1/home_screen.dart';
-import 'package:test1/tabs/hadeth/hadeth_content_screen.dart';
-import 'package:test1/tabs/quran/sura_content_screen.dart';
-import 'package:test1/tabs/settings/setting_tab.dart';
+import 'package:islami/app_theme.dart';
+import 'package:islami/pages/home_screen.dart';
+import 'package:islami/tabs/hadeth/hadeth_content_screen.dart';
+import 'package:islami/tabs/quran/sura_content_screen.dart';
+import 'package:islami/tabs/settings/settings.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const IslamiApp());
+  runApp(ChangeNotifierProvider(
+    create: (context) => SettingsProvider(),
+    child: Islami(),
+  ));
 }
 
-class IslamiApp extends StatelessWidget {
-  const IslamiApp({super.key});
+class Islami extends StatelessWidget {
+  const Islami({super.key});
 
   @override
   Widget build(BuildContext context) {
+    SettingsProvider settingsProvider = Provider.of<SettingsProvider>(context);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      title: 'Flutter Demo',
+      theme: settingsProvider.isDark ? AppTheme.darkTheme : AppTheme.lightTheme,
+      themeMode: settingsProvider.themeMode,
       routes: {
-        HomeScreen.routeName: (_) => HomeScreen(),
-        SuraContentScreen.routName: (_) => SuraContentScreen(),
-        HadithContentScreen.routName: (_) => HadithContentScreen(),
-        // SettingsTab.routeName: (context) => SettingsTab(),
+        '/': (context) => BottmNav(),
+        SuraContentScreen.routeName: (context) => SuraContentScreen(),
+        HadethContentScreen.routeName: (context) => HadethContentScreen(),
       },
-      initialRoute: HomeScreen.routeName,
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.light,
+      initialRoute: '/',
     );
   }
 }

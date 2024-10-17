@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:islami/app_theme.dart';
+import 'package:islami/tabs/hadeth/hadeth.dart';
+import 'package:islami/tabs/settings/settings.dart';
+import 'package:provider/provider.dart';
 
-import '../../app_theme.dart';
-
-import 'hadeth.dart';
-
-class HadithContentScreen extends StatefulWidget {
-  static const String routName = '/hadith_content';
-
-  const HadithContentScreen({super.key});
+class HadethContentScreen extends StatefulWidget {
+  static const routeName = 'hadeth_content_screen';
 
   @override
-  State<HadithContentScreen> createState() => _HadithContentScreenState();
+  State<HadethContentScreen> createState() => _HadethContentScreenState();
 }
 
-class _HadithContentScreenState extends State<HadithContentScreen> {
+class _HadethContentScreenState extends State<HadethContentScreen> {
   List<String> hadithContent = [];
   late Hadeth args;
 
@@ -24,13 +22,15 @@ class _HadithContentScreenState extends State<HadithContentScreen> {
     if (hadithContent.isEmpty) {
       loadHadithFile();
     }
-
+    SettingsProvider settingsProvider = Provider.of<SettingsProvider>(context);
     return Container(
       decoration: BoxDecoration(
-          image: DecorationImage(
-        image: AssetImage('assets/default_bg.png'),
-        fit: BoxFit.fill,
-      )),
+        image: DecorationImage(
+          image: AssetImage(
+              'assets/images/${settingsProvider.backgroundImage}.png'),
+          fit: BoxFit.cover,
+        ),
+      ),
       child: Scaffold(
         appBar: AppBar(
           title: Text(hadeth.title),
@@ -41,7 +41,9 @@ class _HadithContentScreenState extends State<HadithContentScreen> {
               vertical: MediaQuery.sizeOf(context).height * 0.07,
               horizontal: 24),
           decoration: BoxDecoration(
-              color: AppTheme.white, borderRadius: BorderRadius.circular(25)),
+              color:
+                  settingsProvider.isDark ? AppTheme.darkPrimary : Colors.white,
+              borderRadius: BorderRadius.circular(25)),
           child: ListView.builder(
             itemBuilder: (_, index) => Text(
               hadeth.content[index],

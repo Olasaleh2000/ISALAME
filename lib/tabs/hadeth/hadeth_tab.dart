@@ -1,77 +1,71 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:islami/tabs/hadeth/hadeth.dart';
+import 'package:islami/tabs/hadeth/hadeth_content_screen.dart';
 
-import 'hadeth.dart';
-import 'hadeth_content_screen.dart';
+class HadethTab extends StatefulWidget {
+  HadethTab({super.key});
 
-class HadithTab extends StatefulWidget {
   @override
-  State<HadithTab> createState() => _HadithTabState();
+  State<HadethTab> createState() => _HadethTabState();
 }
 
-class _HadithTabState extends State<HadithTab> {
+class _HadethTabState extends State<HadethTab> {
   List<Hadeth> ahadeth = [];
-
   @override
   void initState() {
+    // TODO: implement initState
     super.initState();
-    if (ahadeth.isEmpty) {
-      LoadAhadethFile();
-    }
+    loadAhadethFile();
   }
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Column(
       children: [
         Image.asset(
-          'assets/hadeth_logo.png',
-          height: MediaQuery.sizeOf(context).height * 0.25,
+          'assets/images/hadeth_logo.png',
+          height: size.height * 0.26,
+          width: size.width * 0.49,
+          fit: BoxFit.cover,
         ),
         Expanded(
-          child: ahadeth.isEmpty
-              ? Center(child: CircularProgressIndicator())
-              : ListView.separated(
-                  padding: EdgeInsets.only(top: 16),
-                  itemCount: ahadeth.length,
-                  itemBuilder: (context, index) {
-                    return InkWell(
-                      onTap: () {
-                        Navigator.of(context).pushNamed(
-                          HadithContentScreen.routName,
-                          arguments: ahadeth[index],
-                        );
-                      },
-                      child: ListTile(
-                        title: Text(
-                          'الحديث رقم  ${index + 1}',
-                          style: Theme.of(context).textTheme.headlineSmall,
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    );
-                  },
-                  separatorBuilder: (_, __) => SizedBox(height: 5),
+          child: ListView.separated(
+            itemBuilder: (context, index) => InkWell(
+              onTap: () {
+                Navigator.of(context).pushNamed(
+                  HadethContentScreen.routeName,
+                  arguments: ahadeth[index],
+                );
+              },
+              child: Center(
+                child: Text(
+                  ahadeth[index].title,
+                  style: Theme.of(context).textTheme.headlineSmall,
                 ),
+              ),
+            ),
+            itemCount: ahadeth.length,
+            separatorBuilder: (context, index) => const SizedBox(height: 12),
+          ),
         ),
       ],
     );
   }
 
-  Future<void> LoadAhadethFile() async {
+  Future<void> loadAhadethFile() async {
+    // await Future.delayed(Duration(seconds: 1));
     String ahadethFileContent =
         await rootBundle.loadString('assets/text/ahadeth.txt');
-    List<String> ahadethString = ahadethFileContent.split('#');
-
-    setState(() {
-      ahadeth = ahadethString.map((hadethString) {
-        List<String> hadethLines = hadethString.trim().split('\n');
-        String title = hadethLines[0];
-        hadethLines.removeAt(0);
-        List<String> content = hadethLines;
-        return Hadeth(title, content);
-      }).toList();
-      setState(() {});
-    });
+    List<String> ahadethStrings = ahadethFileContent.split('#');
+    ahadeth = ahadethStrings.map((hadethString) {
+      List<String> hadethLines = hadethString.trim().split('\n');
+      String title = hadethLines[0];
+      hadethLines.removeAt(0);
+      List<String> content = hadethLines;
+      return Hadeth(title: title, content: content);
+    }).toList();
+    setState(() {});
   }
 }
